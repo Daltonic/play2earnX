@@ -10,14 +10,14 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
   }
 
   return (
-    <div className="lg:w-2/3 w-full mx-auto my-10">
+    <div className="lg:w-2/3 w-full mx-auto my-10 text-gray-300">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games.length < 1 && <div className="text-lg font-semibold">No games yet</div>}
 
         {games.map((game: GameStruct, i: number) => (
-          <div key={i} className="bg-white p-6 rounded-lg shadow-md">
+          <div key={i} className="border border-blue-900 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-2 capitalize">{game.title}</h3>
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-500 mb-2">
               {truncate({
                 text: game.description,
                 startChars: 100,
@@ -26,7 +26,7 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
               })}
             </p>
 
-            <div className="flex justify-between items-center text-gray-600 font-medium">
+            <div className="flex justify-between items-center text-blue-700">
               <p>
                 {truncate({
                   text: game.owner,
@@ -41,15 +41,17 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
             <div className="flex justify-start items-center space-x-2 mt-3">
               <Link
                 href={'/gameplay/' + game.id}
-                className="bg-red-700 text-white py-2 px-5 rounded-full
-                  hover:bg-red-600 duration-200 transition-all"
+                className="bg-transparent border border-blue-700 hover:bg-blue-800
+                py-2 px-6 text-blue-700 hover:text-white rounded-full
+                transition duration-300 ease-in-out"
               >
                 View
               </Link>
               <button
                 onClick={() => handleInviteClick(game)}
-                className="bg-blue-700 text-white py-2 px-5 rounded-full
-                  hover:bg-blue-600 duration-200 transition-all"
+                className="bg-transparent border border-blue-700 hover:bg-blue-800
+                py-2 px-6 text-blue-700 hover:text-white rounded-full
+                transition duration-300 ease-in-out"
               >
                 Invite
               </button>

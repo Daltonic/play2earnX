@@ -1,4 +1,5 @@
 import GameCard from '@/components/GameCard'
+import GameResult from '@/components/GameResult'
 import { generateGameData } from '@/utils/fakeData'
 import { GameCardStruct, GameStruct } from '@/utils/type.dt'
 import { NextPage } from 'next'
@@ -137,6 +138,7 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
         <h4 className="text-4xl font-semibold text-blue-700">
           {flipCount} Flip{flipCount === 1 ? '' : 's'}
         </h4>
+
         <div className="grid grid-cols-4 gap-4">
           {cards.map((card: GameCardStruct, i: number) => (
             <GameCard
@@ -147,6 +149,7 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
             />
           ))}
         </div>
+
         <div className="flex space-x-2">
           <button
             className="bg-transparent border border-blue-700 hover:bg-blue-800
@@ -172,6 +175,8 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
           </button>
         </div>
       </div>
+
+      <GameResult game={gameData} scores={[]} />
     </div>
   )
 }

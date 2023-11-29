@@ -12,6 +12,13 @@ export interface GameCardStruct {
   isFlipped?: boolean
 }
 
+export interface ScoreStruct {
+  gameId: number
+  player: string
+  score: number
+  played: boolean
+}
+
 export interface GameParams {
   id?: number
   title: string

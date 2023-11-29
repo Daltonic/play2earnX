@@ -4,7 +4,7 @@ import React from 'react'
 const Hero: React.FC = () => {
   return (
     <section className="h-[60vh]">
-      <main className="lg:w-2/3 w-full mx-auto flex flex-col justify-center items-center h-full">
+      <main className="lg:w-2/3 w-full mx-auto flex flex-col justify-center items-center h-full text-gray-300">
         <h2 className="text-4xl">
           Welcome to Play2<span className="text-blue-700">Earn</span>, Where Fun Meets Fortune!
         </h2>
@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
             Create Game
           </button>
           <Link
-            href="/mygames"
+            href="/games"
             className="border-[1px] border-blue-700 text-blue-700 py-3 px-5 duration-200 transition-all hover:bg-blue-700 hover:text-white"
           >
             My Games
