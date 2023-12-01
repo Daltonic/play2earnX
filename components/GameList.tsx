@@ -42,19 +42,27 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
               <Link
                 href={'/gameplay/' + game.id}
                 className="bg-transparent border border-blue-700 hover:bg-blue-800
-                py-2 px-6 text-blue-700 hover:text-white rounded-full
+                py-2 px-6 text-blue-700 hover:text-gray-300 rounded-full
                 transition duration-300 ease-in-out"
               >
                 View
               </Link>
-              <button
-                onClick={() => handleInviteClick(game)}
-                className="bg-transparent border border-blue-700 hover:bg-blue-800
-                py-2 px-6 text-blue-700 hover:text-white rounded-full
+              <Link
+                href={'/invitations/' + game.id}
+                className="bg-transparent border border-orange-700 hover:bg-orange-800
+                py-2 px-6 text-orange-700 hover:text-gray-300 rounded-full
                 transition duration-300 ease-in-out"
               >
-                Invite
-              </button>
+                Invitations
+              </Link>
+              <Link
+                href={'/results/' + game.id}
+                className="bg-transparent border border-green-700 hover:bg-green-800
+                py-2 px-6 text-green-700 hover:text-gray-300 rounded-full
+                transition duration-300 ease-in-out"
+              >
+                Result
+              </Link>
             </div>
           </div>
         ))}

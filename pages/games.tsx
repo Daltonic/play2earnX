@@ -1,3 +1,4 @@
+import GameDetails from '@/components/GameDetails'
 import GameList from '@/components/GameList'
 import InviteModal from '@/components/InviteModal'
 import { generateGameData } from '@/utils/fakeData'
@@ -13,6 +14,7 @@ const Page: NextPage<{ gamesData: GameStruct[] }> = ({ gamesData }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <GameList games={gamesData} />
+      <GameDetails game={gamesData[0]} />
       <InviteModal />
     </div>
   )

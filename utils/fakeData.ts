@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { GameStruct } from './type.dt'
+import { GameStruct, InvitationStruct, ScoreStruct } from './type.dt'
 
 export const generateGameData = (count: number): GameStruct[] => {
   const games: GameStruct[] = []
@@ -29,4 +29,44 @@ export const generateGameData = (count: number): GameStruct[] => {
   }
 
   return games
+}
+
+export const generateInvitations = (count: number): InvitationStruct[] => {
+  const invitations: InvitationStruct[] = []
+
+  for (let i = 0; i < count; i++) {
+    const game: InvitationStruct = {
+      gameId: i + 1,
+      account: faker.string.hexadecimal({
+        length: { min: 42, max: 42 },
+        prefix: '0x',
+      }),
+      stake: faker.number.float({ min: 0.01, max: 0.1 }),
+      responded: faker.datatype.boolean(),
+      accepted: faker.datatype.boolean(),
+    }
+    invitations.push(game)
+  }
+
+  return invitations
+}
+
+export const generateScores = (count: number): ScoreStruct[] => {
+  const scores: ScoreStruct[] = []
+
+  for (let i = 0; i < count; i++) {
+    const game: ScoreStruct = {
+      gameId: i + 1,
+      player: faker.string.hexadecimal({
+        length: { min: 42, max: 42 },
+        prefix: '0x',
+      }),
+      prize: faker.number.float({ min: 0.01, max: 0.1 }),
+      score: faker.number.int({ min: 12, max: 30 }),
+      played: faker.datatype.boolean(),
+    }
+    scores.push(game)
+  }
+
+  return scores
 }

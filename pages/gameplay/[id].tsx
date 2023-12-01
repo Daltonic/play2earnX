@@ -1,5 +1,4 @@
 import GameCard from '@/components/GameCard'
-import GameResult from '@/components/GameResult'
 import { generateGameData } from '@/utils/fakeData'
 import { GameCardStruct, GameStruct } from '@/utils/type.dt'
 import { NextPage } from 'next'
@@ -175,8 +174,6 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
           </button>
         </div>
       </div>
-
-      <GameResult game={gameData} scores={[]} />
     </div>
   )
 }

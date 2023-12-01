@@ -16,7 +16,16 @@ export interface ScoreStruct {
   gameId: number
   player: string
   score: number
+  prize: number
   played: boolean
+}
+
+export interface InvitationStruct {
+  gameId: number
+  account: string
+  responded: boolean
+  accepted: boolean
+  stake: number
 }
 
 export interface GameParams {

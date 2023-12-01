@@ -21,3 +21,15 @@ export const formatDate = (timestamp: number): string => {
   }
   return new Intl.DateTimeFormat('en-US', options).format(date)
 }
+
+export const timestampToDate = (timestamp: number) => {
+  const date = new Date(timestamp)
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }
+  return date.toLocaleDateString('en-US', options)
+}
