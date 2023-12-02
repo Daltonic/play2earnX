@@ -57,3 +57,15 @@ export interface GameStruct {
   deleted: boolean
   paidOut: boolean
 }
+
+export interface GlobalState {
+  games: GameStruct[]
+  game: GameStruct | null
+  scores: ScoreStruct[]
+  invitations: InvitationStruct[]
+  createModal: string
+}
+
+export interface RootState {
+  globalStates: GlobalState
+}

@@ -1,9 +1,12 @@
 import GameInvitations from '@/components/GameInvitations'
 import InviteModal from '@/components/InviteModal'
+import { globalActions } from '@/store/globalSlices'
 import { generateGameData, generateInvitations } from '@/utils/fakeData'
-import { GameStruct, InvitationStruct } from '@/utils/type.dt'
+import { GameStruct, InvitationStruct, RootState } from '@/utils/type.dt'
 import { NextPage } from 'next'
 import Head from 'next/head'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 interface PageProps {
   gameData: GameStruct
@@ -11,13 +14,22 @@ interface PageProps {
 }
 
 const Page: NextPage<PageProps> = ({ gameData, invitationsData }) => {
+  const dispatch = useDispatch()
+  const { setGame, setInvitations } = globalActions
+  const { game, invitations } = useSelector((states: RootState) => states.globalStates)
+
+  useEffect(() => {
+    dispatch(setGame(gameData))
+    dispatch(setInvitations(invitationsData))
+  }, [dispatch, setGame, gameData, setInvitations, invitationsData])
+
   return (
     <div>
       <Head>
         <title>Play2Earn | Game Invitation</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <GameInvitations game={gameData} invitations={invitationsData} />
+      {game && <GameInvitations game={game} invitations={invitations} />}
       <InviteModal />
     </div>
   )

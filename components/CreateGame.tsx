@@ -1,12 +1,17 @@
-import { GameParams } from '@/utils/type.dt'
+import { globalActions } from '@/store/globalSlices'
+import { GameParams, RootState } from '@/utils/type.dt'
 import { useRouter } from 'next/router'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const CreateGame: React.FC = () => {
-  const createModal = 'scale-0'
   const navigate = useRouter()
+  const { createModal } = useSelector((states: RootState) => states.globalStates)
+
+  const dispatch = useDispatch()
+  const { setCreateModal } = globalActions
 
   const [game, setGame] = useState<GameParams>({
     title: '',
@@ -28,6 +33,7 @@ const CreateGame: React.FC = () => {
   }
 
   const closeModal = () => {
+    dispatch(setCreateModal('scale-0'))
     setGame({
       title: '',
       participants: '',
