@@ -3,10 +3,11 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract PlayToEarnX is Ownable, ReentrancyGuard {
+contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
 
@@ -57,12 +58,12 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
 
   mapping(uint => bool) gameExists;
   mapping(uint256 => GameStruct) games;
-  mapping(uint256 => PlayerStruct) players;
+  mapping(uint256 => PlayerStruct[]) players;
   mapping(uint256 => ScoreStruct[]) scores;
   mapping(uint256 => mapping(address => bool)) isListed;
   mapping(uint256 => InvitationStruct[]) invitationsOf;
 
-  constructor(uint256 _pct) {
+  constructor(uint256 _pct) ERC20('Play To Earn', 'P2E') {
     servicePct = _pct;
   }
 
@@ -93,6 +94,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
     game.startDate = startDate;
     game.endDate = endDate;
     game.stake = msg.value;
+    game.owner = msg.sender;
     game.timestamp = currentTime();
 
     games[game.id] = game;
@@ -103,6 +105,13 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
   function deleteGame(uint256 gameId) public {
     require(gameExists[gameId], 'Game not found');
     require(games[gameId].owner == msg.sender, 'Unauthorized entity');
+    require(games[gameId].acceptees == 1, 'Participants already in game');
+
+    players[gameId].pop();
+    isListed[gameId][msg.sender] = false;
+    payTo(msg.sender, games[gameId].stake);
+
+    games[gameId].acceptees--;
     games[gameId].deleted = true;
   }
 
@@ -114,7 +123,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
     player.gameId = gameId;
     player.acount = msg.sender;
 
-    players[player.id] = player;
+    players[gameId].push(player);
 
     isListed[player.gameId][msg.sender] = true;
 
@@ -159,7 +168,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
     invitationsOf[gameId][index].responded = true;
   }
 
-  function payout(uint256 gameId) public {
+  function payout(uint256 gameId) public nonReentrant() {
     require(gameExists[gameId], 'Game does not exist');
     require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
     require(!games[gameId].paidOut, 'Game already paid out');
@@ -177,6 +186,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard {
     for (uint i = 0; i < games[gameId].numberOfWinners; i++) {
       uint payoutAmount = profit.div(games[gameId].numberOfWinners);
       payTo(Scores[i].player, payoutAmount);
+      _mint(Scores[i].player, payoutAmount); // Mint tokens to the winner
     }
     games[gameId].paidOut = true;
   }
