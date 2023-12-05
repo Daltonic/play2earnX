@@ -21,7 +21,6 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     address owner;
     uint256 participants;
     uint256 numberOfWinners;
-    uint256 plays;
     uint256 acceptees;
     uint256 stake;
     uint256 startDate;
@@ -159,6 +158,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     score.gameId = gameId;
     score.player = msg.sender;
     scores[gameId].push(score);
+    games[gameId].acceptees++;
   }
 
   function rejectInvitation(uint256 gameId, uint256 index) public {
@@ -170,7 +170,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function payout(uint256 gameId) public nonReentrant() {
     require(gameExists[gameId], 'Game does not exist');
-    require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
+    // require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
     require(!games[gameId].paidOut, 'Game already paid out');
 
     uint256 fee = (games[gameId].stake.mul(servicePct)).div(100);
@@ -181,7 +181,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     payTo(games[gameId].owner, fee.div(2));
 
     ScoreStruct[] memory Scores = new ScoreStruct[](scores[gameId].length);
-    Scores = sortScores(Scores);
+    Scores = sortScores(scores[gameId]);
 
     for (uint i = 0; i < games[gameId].numberOfWinners; i++) {
       uint payoutAmount = profit.div(games[gameId].numberOfWinners);
@@ -218,15 +218,15 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   }
 
   function saveScore(uint256 gameId, uint256 index, uint256 score) public {
-    require(games[gameId].numberOfWinners + 1 == games[gameId].acceptees, 'Not enough players yet');
+    require(games[gameId].acceptees > games[gameId].numberOfWinners, 'Not enough players yet');
     require(scores[gameId][index].gameId == gameId, 'Player not found');
     require(!scores[gameId][index].played, 'Player already recorded');
-    require(
-      currentTime() >= games[gameId].startDate && currentTime() < games[gameId].endDate,
-      'Game play must be in session'
-    );
+    require(scores[gameId][index].player == msg.sender, 'Unauthorized entity');
+    // require(
+    //   currentTime() >= games[gameId].startDate && currentTime() < games[gameId].endDate,
+    //   'Game play must be in session'
+    // ); // disable on testing
 
-    games[gameId].plays++;
     scores[gameId][index].score = score;
     scores[gameId][index].played = true;
     scores[gameId][index].player = msg.sender;
@@ -294,8 +294,8 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     }
   }
 
-  function getGame(uint256 id) public view returns (GameStruct memory) {
-    return games[id];
+  function getGame(uint256 gameId) public view returns (GameStruct memory) {
+    return games[gameId];
   }
 
   function getInvitations(uint256 gameId) public view returns (InvitationStruct[] memory) {

@@ -10,7 +10,7 @@ describe('Contracts', () => {
 
   const description = 'showcase your speed in a game'
   const title = 'Game title'
-  const participants = 4
+  const participants = 2
   const winners = 1
   const starts = Date.now() - 10 * 60 * 1000
   const ends = Date.now() + 10 * 60 * 1000
@@ -46,8 +46,6 @@ describe('Contracts', () => {
 
       result = await contract.getGame(gameId)
       expect(result.deleted).to.be.equal(false)
-
-      console.log(Number(result.acceptees));
 
       await contract.connect(owner).deleteGame(gameId)
 
@@ -94,7 +92,7 @@ describe('Contracts', () => {
       expect(result.responded).to.be.equal(true)
       expect(result.accepted).to.be.equal(true)
     })
-    
+
     it('should confirm invite rejection', async () => {
       result = await contract.getInvitations(gameId)
       result = result[0]
@@ -111,5 +109,49 @@ describe('Contracts', () => {
     })
   })
 
+  describe('Player Management', () => {
+    const index = 0
+    beforeEach(async () => {
+      await contract
+        .connect(owner)
+        .createGame(title, description, participants, winners, starts, ends, {
+          value: toWei(stake),
+        })
 
+      await contract.invitePlayer(player1, gameId)
+      await contract.invitePlayer(player2, gameId)
+
+      await contract.connect(player1).acceptInvitation(gameId, index, { value: toWei(stake) })
+      await contract.connect(player2).acceptInvitation(gameId, index + 1, { value: toWei(stake) })
+    })
+
+    it('should confirm scoring and payout', async () => {
+      result = await contract.getScores(gameId)
+      expect(result).to.have.lengthOf(2)
+      expect(result[index].played).to.be.equal(false)
+
+      await contract.connect(player1).saveScore(gameId, index, 15)
+      await contract.connect(player2).saveScore(gameId, index + 1, 11)
+
+      result = await contract.getScores(gameId)
+      expect(result[index].played).to.be.equal(true)
+
+      result = await contract.getGames()
+      expect(result).to.have.lengthOf(1)
+      
+      result = await contract.getPaidOutGames()
+      expect(result).to.have.lengthOf(0)
+
+      await contract.payout(gameId)
+
+      result = await contract.getGames()
+      expect(result).to.have.lengthOf(0)
+
+      result = await contract.getPaidOutGames()
+      expect(result).to.have.lengthOf(1)
+
+      result = await contract.getGame(gameId)
+      expect(result.paidOut).to.be.equal(true)
+    })
+  })
 })
