@@ -47,8 +47,6 @@ export interface GameStruct {
   owner: string
   participants: number
   numberOfWinners: number
-  challenges: number
-  plays: number
   acceptees: number
   stake: number
   startDate: number

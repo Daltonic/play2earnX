@@ -8,7 +8,7 @@ const Hero: React.FC = () => {
   const { setCreateModal } = globalActions
 
   return (
-    <section className="h-[60vh]">
+    <section className="py-32">
       <main
         className="lg:w-2/3 w-full mx-auto flex flex-col justify-center
         items-center h-full text-gray-300"

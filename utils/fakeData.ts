@@ -15,8 +15,6 @@ export const generateGameData = (count: number): GameStruct[] => {
       }),
       participants: faker.number.int({ min: 20, max: 40 }),
       numberOfWinners: faker.number.int({ min: 1, max: 10 }),
-      challenges: faker.number.int({ min: 1, max: 7 }),
-      plays: faker.number.int({ min: 1, max: 6 }),
       acceptees: faker.number.int({ min: 1, max: 10 }),
       stake: faker.number.float({ min: 0.01, max: 0.1 }),
       startDate: faker.date.future().getTime(),

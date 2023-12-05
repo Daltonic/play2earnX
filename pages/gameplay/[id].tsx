@@ -1,7 +1,7 @@
 import GameCard from '@/components/GameCard'
-import { generateGameData } from '@/utils/fakeData'
+import { getGame } from '@/services/blockchain'
 import { GameCardStruct, GameStruct } from '@/utils/type.dt'
-import { NextPage } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -129,7 +129,7 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
   return (
     <div>
       <Head>
-        <title>Play2Earn | GamePlay</title>
+        <title>Play2Earn | {gameData?.title}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -180,8 +180,9 @@ const Page: NextPage<{ gameData: GameStruct }> = ({ gameData }) => {
 
 export default Page
 
-export const getServerSideProps = async () => {
-  const gameData: GameStruct = generateGameData(5)[0]
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { id } = context.query
+  const gameData: GameStruct = await getGame(Number(id))
   return {
     props: { gameData: JSON.parse(JSON.stringify(gameData)) },
   }
