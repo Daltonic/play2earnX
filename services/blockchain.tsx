@@ -1,10 +1,13 @@
 import { ethers } from 'ethers'
 import address from '@/contracts/contractAddress.json'
 import p2eAbi from '@/artifacts/contracts/Play2EarnX.sol/PlayToEarnX.json'
-import { GameStruct } from '@/utils/type.dt'
+import { GameStruct, InvitationStruct } from '@/utils/type.dt'
+import { globalActions } from '@/store/globalSlices'
+import { store } from '@/store'
 
 const toWei = (num: number) => ethers.parseEther(num.toString())
 const fromWei = (num: number) => ethers.formatEther(num)
+const { setInvitations } = globalActions
 
 let ethereum: any
 let tx: any
@@ -54,6 +57,49 @@ const getGame = async (gameId: number): Promise<GameStruct> => {
   return structuredGames([game])[0]
 }
 
+const getInvitations = async (gameId: number): Promise<InvitationStruct[]> => {
+  const contract = await getEthereumContracts()
+  const invitation = await contract.getInvitations(gameId)
+  return structuredInvitations(invitation)
+}
+
+const getMyInvitations = async (): Promise<InvitationStruct[]> => {
+  const contract = await getEthereumContracts()
+  const invitation = await contract.getMyInvitations()
+  return structuredInvitations(invitation)
+}
+
+const respondToInvite = async (
+  accept: boolean,
+  invitation: InvitationStruct,
+  index: number
+): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    if (accept) {
+      tx = await contract.acceptInvitation(invitation.gameId, index, {
+        value: toWei(invitation.stake),
+      })
+    } else {
+      tx = await contract.rejectInvitation(invitation.gameId, index)
+    }
+    await tx.wait()
+
+    const invitations: InvitationStruct[] = await getMyInvitations()
+    store.dispatch(setInvitations(invitations))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
 const structuredGames = (games: GameStruct[]): GameStruct[] =>
   games
     .map((game) => ({
@@ -73,4 +119,27 @@ const structuredGames = (games: GameStruct[]): GameStruct[] =>
     }))
     .sort((a, b) => b.timestamp - a.timestamp)
 
-export { getOwner, getGames, getMyGames, getGame }
+const structuredInvitations = (invitations: InvitationStruct[]): InvitationStruct[] =>
+  invitations
+    .map((invitation) => ({
+      id: Number(invitation.id),
+      gameId: Number(invitation.gameId),
+      title: invitation.title,
+      sender: invitation.sender,
+      receiver: invitation.receiver,
+      stake: parseFloat(fromWei(invitation.stake)),
+      accepted: invitation.accepted,
+      responded: invitation.responded,
+      timestamp: Number(invitation.timestamp),
+    }))
+    .sort((a, b) => b.timestamp - a.timestamp)
+
+export {
+  getOwner,
+  getGames,
+  getMyGames,
+  getGame,
+  getInvitations,
+  getMyInvitations,
+  respondToInvite,
+}

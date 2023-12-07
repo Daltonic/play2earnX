@@ -21,11 +21,15 @@ export interface ScoreStruct {
 }
 
 export interface InvitationStruct {
+  id: number
   gameId: number
-  account: string
+  title: string
+  sender: string
+  receiver: string
   responded: boolean
   accepted: boolean
   stake: number
+  timestamp: number
 }
 
 export interface GameParams {
@@ -62,6 +66,7 @@ export interface GlobalState {
   scores: ScoreStruct[]
   invitations: InvitationStruct[]
   createModal: string
+  resultModal: string
 }
 
 export interface RootState {

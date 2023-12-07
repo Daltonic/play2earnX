@@ -6,4 +6,5 @@ export const globalStates: GlobalState = {
   invitations: [],
   game: null,
   createModal: 'scale-0',
+  resultModal: 'scale-0',
 }

@@ -1,9 +1,9 @@
 import GameInvitations from '@/components/GameInvitations'
 import InviteModal from '@/components/InviteModal'
+import { getGame, getInvitations } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
-import { generateGameData, generateInvitations } from '@/utils/fakeData'
 import { GameStruct, InvitationStruct, RootState } from '@/utils/type.dt'
-import { NextPage } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -37,9 +37,10 @@ const Page: NextPage<PageProps> = ({ gameData, invitationsData }) => {
 
 export default Page
 
-export const getServerSideProps = async () => {
-  const gameData: GameStruct = generateGameData(1)[0]
-  const invitationsData: InvitationStruct[] = generateInvitations(8)
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { id } = context.query
+  const gameData: GameStruct = await getGame(Number(id))
+  const invitationsData: InvitationStruct[] = await getInvitations(Number(id))
   return {
     props: {
       gameData: JSON.parse(JSON.stringify(gameData)),

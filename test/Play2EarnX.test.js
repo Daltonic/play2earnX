@@ -72,10 +72,16 @@ describe('Contracts', () => {
       result = await contract.getInvitations(gameId)
       expect(result).to.have.lengthOf(1)
 
+      result = await contract.connect(player1).getMyInvitations()
+      expect(result).to.have.lengthOf(1)
+
       await contract.invitePlayer(player2, gameId)
 
       result = await contract.getInvitations(gameId)
       expect(result).to.have.lengthOf(2)
+
+      result = await contract.connect(player2).getMyInvitations()
+      expect(result).to.have.lengthOf(1)
     })
 
     it('should confirm invite acceptence', async () => {

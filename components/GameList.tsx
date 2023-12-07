@@ -2,11 +2,16 @@ import React from 'react'
 import { GameStruct } from '@/utils/type.dt'
 import { formatDate, truncate } from '@/utils/helper'
 import Link from 'next/link'
+import { useDispatch } from 'react-redux'
+import { globalActions } from '@/store/globalSlices'
 
 const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
-  const handleInviteClick = (game: GameStruct) => {
-    // setGlobalState('game', game)
-    // setGlobalState('inviteModal', 'scale-100')
+  const dispatch = useDispatch()
+  const { setGame, setResultModal } = globalActions
+
+  const openModal = (game: GameStruct) => {
+    dispatch(setGame(game))
+    dispatch(setResultModal('scale-100'))
   }
 
   return (
@@ -16,7 +21,12 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
 
         {games.map((game: GameStruct, i: number) => (
           <div key={i} className="border border-blue-900 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2 capitalize">{game.title}</h3>
+            <h3
+              onClick={() => openModal(game)}
+              className="text-lg font-semibold mb-2 capitalize cursor-pointer"
+            >
+              {game.title}
+            </h3>
             <p className="text-gray-500 mb-2">
               {truncate({
                 text: game.description,
@@ -45,7 +55,7 @@ const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
                 py-2 px-6 text-blue-700 hover:text-gray-300 rounded-full
                 transition duration-300 ease-in-out"
               >
-                View
+                Play
               </Link>
               <Link
                 href={'/invitations/' + game.id}

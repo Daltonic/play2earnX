@@ -11,10 +11,13 @@ export const globalActions = {
   setInvitations: (state: GlobalState, action: PayloadAction<InvitationStruct[]>) => {
     state.invitations = action.payload
   },
-  setGame: (state: GlobalState, action: PayloadAction<GameStruct>) => {
+  setGame: (state: GlobalState, action: PayloadAction<GameStruct | null>) => {
     state.game = action.payload
   },
   setCreateModal: (state: GlobalState, action: PayloadAction<string>) => {
     state.createModal = action.payload
+  },
+  setResultModal: (state: GlobalState, action: PayloadAction<string>) => {
+    state.resultModal = action.payload
   },
 }

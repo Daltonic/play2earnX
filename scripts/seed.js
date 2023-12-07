@@ -81,6 +81,11 @@ async function getInvitations(contract, gameId) {
   console.log('Invitations:', result)
 }
 
+async function getMyInvitations(contract) {
+  const result = await contract.getMyInvitations()
+  console.log('Invitations:', result)
+}
+
 async function main() {
   let playToEarnXContract
 
@@ -90,23 +95,24 @@ async function main() {
 
     playToEarnXContract = await ethers.getContractAt('PlayToEarnX', playToEarnXAddress)
 
-    // generateGameData(dataCount).forEach(async (game) => {
-    //   await createGame(playToEarnXContract, game)
-    // })
+    generateGameData(dataCount).forEach(async (game) => {
+      await createGame(playToEarnXContract, game)
+    })
 
-    // Array(dataCount)
-    //   .fill()
-    //   .forEach(async (charity, i) => {
-    //     const randomCount = faker.number.int({ min: 1, max: 4 })
-    //     const invitations = await generateInvitations(randomCount)
+    Array(dataCount)
+      .fill()
+      .forEach(async (charity, i) => {
+        const randomCount = faker.number.int({ min: 1, max: 4 })
+        const invitations = await generateInvitations(randomCount)
 
-    //     invitations.forEach(async (player, i) => {
-    //       await sendInvitation(playToEarnXContract, player)
-    //     })
-    //   })
+        invitations.forEach(async (player, i) => {
+          await sendInvitation(playToEarnXContract, player)
+        })
+      })
 
-    await getGames(playToEarnXContract)
-    await getInvitations(playToEarnXContract, 1)
+    // await getGames(playToEarnXContract)
+    // await getInvitations(playToEarnXContract, 1)
+    // await getMyInvitations(playToEarnXContract)
   } catch (error) {
     console.error('Unhandled error:', error)
   }

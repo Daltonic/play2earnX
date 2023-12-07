@@ -13,6 +13,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   Counters.Counter private _totalGames;
   Counters.Counter private _totalPlayers;
+  Counters.Counter private _totalInvitations;
 
   struct GameStruct {
     uint256 id;
@@ -37,11 +38,15 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   }
 
   struct InvitationStruct {
+    uint256 id;
+    string title;
     uint256 gameId;
-    address account;
+    address receiver;
+    address sender;
     bool responded;
     bool accepted;
     uint256 stake;
+    uint256 timestamp;
   }
 
   struct ScoreStruct {
@@ -60,6 +65,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   mapping(uint256 => PlayerStruct[]) players;
   mapping(uint256 => ScoreStruct[]) scores;
   mapping(uint256 => mapping(address => bool)) isListed;
+  mapping(uint256 => mapping(address => bool)) isInvited;
   mapping(uint256 => InvitationStruct[]) invitationsOf;
 
   constructor(uint256 _pct) ERC20('Play To Earn', 'P2E') {
@@ -131,23 +137,30 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     return true;
   }
 
-  function invitePlayer(address account, uint256 gameId) public {
+  function invitePlayer(address receiver, uint256 gameId) public {
     require(gameExists[gameId], 'Game not found');
     require(games[gameId].acceptees <= games[gameId].participants, 'Out of capacity');
-    require(!isListed[gameId][account], 'Player is already in this game');
+    require(!isListed[gameId][receiver], 'Player is already in this game');
 
+    _totalInvitations.increment();
     InvitationStruct memory invitation;
+
+    invitation.id = _totalInvitations.current();
     invitation.gameId = gameId;
-    invitation.account = account;
+    invitation.title = games[gameId].title;
+    invitation.receiver = receiver;
+    invitation.sender = msg.sender;
+    invitation.timestamp = currentTime();
     invitation.stake = games[gameId].stake;
 
+    isInvited[gameId][receiver] = true;
     invitationsOf[gameId].push(invitation);
   }
 
   function acceptInvitation(uint256 gameId, uint256 index) public payable {
     require(gameExists[gameId], 'Game not found');
     require(msg.value >= games[gameId].stake, 'Insuffcient funds');
-    require(invitationsOf[gameId][index].account == msg.sender, 'Unauthorized entity');
+    require(invitationsOf[gameId][index].receiver == msg.sender, 'Unauthorized entity');
 
     require(playedSaved(gameId), 'Failed to create player');
 
@@ -163,12 +176,12 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function rejectInvitation(uint256 gameId, uint256 index) public {
     require(gameExists[gameId], 'Game not found');
-    require(invitationsOf[gameId][index].account == msg.sender, 'Unauthorized entity');
+    require(invitationsOf[gameId][index].receiver == msg.sender, 'Unauthorized entity');
 
     invitationsOf[gameId][index].responded = true;
   }
 
-  function payout(uint256 gameId) public nonReentrant() {
+  function payout(uint256 gameId) public nonReentrant {
     require(gameExists[gameId], 'Game does not exist');
     // require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
     require(!games[gameId].paidOut, 'Game already paid out');
@@ -300,6 +313,29 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function getInvitations(uint256 gameId) public view returns (InvitationStruct[] memory) {
     return invitationsOf[gameId];
+  }
+
+  function getMyInvitations() public view returns (InvitationStruct[] memory Invitation) {
+    uint256 available;
+
+    for (uint256 i = 1; i <= _totalGames.current(); i++) {
+      if (isInvited[i][msg.sender]) {
+        available++;
+      }
+    }
+
+    Invitation = new InvitationStruct[](available);
+    uint256 index;
+
+    for (uint256 i = 1; i <= _totalGames.current(); i++) {
+      if (isInvited[i][msg.sender]) {
+        for (uint256 j = 0; j < invitationsOf[i].length; j++) {
+          Invitation[index] = invitationsOf[i][j];
+          Invitation[index].id = j;
+        }
+        index++;
+      }
+    }
   }
 
   function getScores(uint256 gameId) public view returns (ScoreStruct[] memory) {

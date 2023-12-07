@@ -30,7 +30,7 @@ const Page: NextPage<{ gamesData: GameStruct[] }> = ({ gamesData }) => {
       {games.length > 1 && (
         <>
           <GameList games={games} />
-          <GameDetails game={games[0]} />
+          <GameDetails />
         </>
       )}
       <CreateGame />
