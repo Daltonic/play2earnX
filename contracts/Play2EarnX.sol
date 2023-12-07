@@ -50,6 +50,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   }
 
   struct ScoreStruct {
+    uint id;
     uint gameId;
     address player;
     uint score;
@@ -101,6 +102,12 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     game.stake = msg.value;
     game.owner = msg.sender;
     game.timestamp = currentTime();
+
+    ScoreStruct memory score;
+    score.id = scores[game.id].length;
+    score.gameId = game.id;
+    score.player = msg.sender;
+    scores[game.id].push(score);
 
     games[game.id] = game;
     gameExists[game.id] = true;
@@ -168,10 +175,10 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     invitationsOf[gameId][index].accepted = true;
 
     ScoreStruct memory score;
+    score.id = scores[gameId].length;
     score.gameId = gameId;
     score.player = msg.sender;
     scores[gameId].push(score);
-    games[gameId].acceptees++;
   }
 
   function rejectInvitation(uint256 gameId, uint256 index) public {

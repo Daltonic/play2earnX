@@ -1,13 +1,13 @@
 import { ethers } from 'ethers'
 import address from '@/contracts/contractAddress.json'
 import p2eAbi from '@/artifacts/contracts/Play2EarnX.sol/PlayToEarnX.json'
-import { GameStruct, InvitationStruct } from '@/utils/type.dt'
+import { GameParams, GameStruct, InvitationStruct, ScoreStruct } from '@/utils/type.dt'
 import { globalActions } from '@/store/globalSlices'
 import { store } from '@/store'
 
 const toWei = (num: number) => ethers.parseEther(num.toString())
 const fromWei = (num: number) => ethers.formatEther(num)
-const { setInvitations } = globalActions
+const { setInvitations, setGames, setScores } = globalActions
 
 let ethereum: any
 let tx: any
@@ -67,6 +67,83 @@ const getMyInvitations = async (): Promise<InvitationStruct[]> => {
   const contract = await getEthereumContracts()
   const invitation = await contract.getMyInvitations()
   return structuredInvitations(invitation)
+}
+
+const getScores = async (gameId: number): Promise<ScoreStruct[]> => {
+  const contract = await getEthereumContracts()
+  const scores = await contract.getScores(gameId)
+  return structuredScores(scores)
+}
+
+const createGame = async (game: GameParams): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    tx = await contract.createGame(
+      game.title,
+      game.description,
+      game.participants,
+      game.numberOfWinners,
+      game.startDate,
+      game.endDate,
+      { value: toWei(Number(game.stake)) }
+    )
+    await tx.wait()
+
+    const games: GameStruct[] = await getGames()
+    store.dispatch(setGames(games))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
+const invitePlayer = async (receiver: string, gameId: number): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    tx = await contract.invitePlayer(receiver, gameId)
+    await tx.wait()
+
+    const invitations: InvitationStruct[] = await getInvitations(gameId)
+    store.dispatch(setInvitations(invitations))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
+const saveScore = async (gameId: number, index: number, score: number): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    tx = await contract.saveScore(gameId, index, score)
+    await tx.wait()
+
+    const scores: ScoreStruct[] = await getScores(gameId)
+    store.dispatch(setScores(scores))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
 }
 
 const respondToInvite = async (
@@ -134,12 +211,28 @@ const structuredInvitations = (invitations: InvitationStruct[]): InvitationStruc
     }))
     .sort((a, b) => b.timestamp - a.timestamp)
 
+const structuredScores = (scores: ScoreStruct[]): ScoreStruct[] =>
+  scores
+    .map((score) => ({
+      id: Number(score.id),
+      gameId: Number(score.gameId),
+      player: score.player,
+      prize: parseFloat(fromWei(score.prize)),
+      score: Number(score.score),
+      played: score.played,
+    }))
+    .sort((a, b) => b.score - a.score)
+
 export {
   getOwner,
   getGames,
   getMyGames,
   getGame,
+  getScores,
   getInvitations,
   getMyInvitations,
   respondToInvite,
+  createGame,
+  invitePlayer,
+  saveScore
 }

@@ -1,13 +1,12 @@
+import { createGame } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { GameParams, RootState } from '@/utils/type.dt'
-import { useRouter } from 'next/router'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const CreateGame: React.FC = () => {
-  const navigate = useRouter()
   const { createModal } = useSelector((states: RootState) => states.globalStates)
 
   const dispatch = useDispatch()
@@ -17,10 +16,9 @@ const CreateGame: React.FC = () => {
     title: '',
     description: '',
     participants: '',
-    winners: '',
-    challenges: '',
-    starts: '',
-    ends: '',
+    numberOfWinners: '',
+    startDate: '',
+    endDate: '',
     stake: '',
   })
 
@@ -37,10 +35,9 @@ const CreateGame: React.FC = () => {
     setGame({
       title: '',
       participants: '',
-      winners: '',
-      challenges: '',
-      starts: '',
-      ends: '',
+      numberOfWinners: '',
+      startDate: '',
+      endDate: '',
       description: '',
       stake: '',
     })
@@ -49,12 +46,18 @@ const CreateGame: React.FC = () => {
   const handleGameCreation = async (e: FormEvent) => {
     e.preventDefault()
 
-    game.starts = new Date(game.starts).getTime()
-    game.ends = new Date(game.ends).getTime()
+    game.startDate = new Date(game.startDate).getTime()
+    game.endDate = new Date(game.endDate).getTime()
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        // ...
+        createGame(game)
+          .then((tx) => {
+            console.log(tx)
+            closeModal()
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -82,19 +85,6 @@ const CreateGame: React.FC = () => {
             className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5"
             onSubmit={handleGameCreation}
           >
-            <label className="text-[12px]">Title</label>
-            <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
-              <input
-                placeholder="Title"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                name="title"
-                type="text"
-                value={game.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
             <div className="flex flex-col sm:flex-row justify-between items-center w-full space-x-2 my-3">
               <div className="w-full">
                 <label className="text-[12px]">Participants</label>
@@ -119,8 +109,8 @@ const CreateGame: React.FC = () => {
                     type="number"
                     min={1}
                     className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                    name="winners"
-                    value={game.winners}
+                    name="numberOfWinners"
+                    value={game.numberOfWinners}
                     onChange={handleChange}
                     required
                   />
@@ -128,61 +118,66 @@ const CreateGame: React.FC = () => {
               </div>
 
               <div className="w-full">
-                <label className="text-[12px]">Number of challenges</label>
+                <label className="text-[12px]">Stake Amount</label>
                 <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4">
                   <input
-                    placeholder="E.g 5"
+                    placeholder="E.g 2"
                     type="number"
-                    min={5}
                     className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                    name="challenges"
-                    value={game.challenges}
+                    name="stake"
+                    value={game.stake}
                     onChange={handleChange}
+                    step={0.0001}
+                    min={0.0001}
                     required
                   />
                 </div>
               </div>
             </div>
-            <div className="w-full">
-              <label className="text-[12px]">Stake amount</label>
-              <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
-                <input
-                  placeholder="eg 0.04"
-                  className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                  name="stake"
-                  value={game.stake}
-                  type="number"
-                  onChange={handleChange}
-                  step={0.0001}
-                  min={0.0001}
-                  required
-                />
-              </div>
+
+            <label className="text-[12px]">Title</label>
+            <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
+              <input
+                placeholder="Title"
+                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                name="title"
+                type="text"
+                value={game.title}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <label className="text-[12px]">Starts On</label>
-            <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
-              <input
-                placeholder="Start Date"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                name="starts"
-                type="datetime-local"
-                value={game.starts}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <label className="text-[12px]">Ends On</label>
-            <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
-              <input
-                placeholder="End Date"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
-                name="ends"
-                type="datetime-local"
-                value={game.ends}
-                onChange={handleChange}
-                required
-              />
+            <div className="flex flex-col sm:flex-row justify-between items-center w-full space-x-2 my-3">
+              <div className="w-full">
+                <label className="text-[12px]">Starts On</label>
+                <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
+                  <input
+                    placeholder="Start Date"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                    name="startDate"
+                    type="datetime-local"
+                    value={game.startDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="w-full">
+                <label className="text-[12px]">Ends On</label>
+                <div className="py-2 w-full border border-blue-900 rounded-full flex items-center px-4 mb-3 mt-2">
+                  <input
+                    placeholder="End Date"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                    name="endDate"
+                    type="datetime-local"
+                    value={game.endDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
             <label className="text-[12px]">Description</label>

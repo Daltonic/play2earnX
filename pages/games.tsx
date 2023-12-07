@@ -17,6 +17,7 @@ const Page: NextPage = () => {
   useEffect(() => {
     const fetchGame = async () => {
       const gamesData: GameStruct[] = await getMyGames()
+
       dispatch(setGames(gamesData))
     }
 
@@ -29,12 +30,8 @@ const Page: NextPage = () => {
         <title>Play2Earn | Game List</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {games.length > 1 && (
-        <>
-          <GameList games={games} />
-          <GameDetails />
-        </>
-      )}
+      <GameList games={games} />
+      <GameDetails />
       <InviteModal />
     </div>
   )

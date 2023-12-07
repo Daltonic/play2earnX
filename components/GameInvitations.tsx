@@ -5,6 +5,7 @@ import Identicon from 'react-identicons'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import { respondToInvite } from '@/services/blockchain'
+import Link from 'next/link'
 
 interface ComponentProps {
   game?: GameStruct
@@ -37,7 +38,7 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-gray-500">
+    <div className="flex flex-col items-center justify-center pt-32 pb-5 text-gray-500">
       <h1 className="text-4xl text-gray-300 capitalize font-bold mb-10">
         {game ? `${game.title} Invitations` : 'Invitations'}
       </h1>
@@ -56,16 +57,23 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                   string={label ? invitation.sender : invitation.receiver}
                 />
                 <div>
-                  <p className="font-medium capitalize">
-                    {label
-                      ? `${invitation.title} game`
-                      : truncate({
-                          text: label ? invitation.sender : invitation.receiver,
-                          startChars: 4,
-                          endChars: 4,
-                          maxLength: 11,
-                        })}
-                  </p>
+                  {label ? (
+                    <Link
+                      href={'/gameplay/' + invitation.gameId}
+                      className="font-medium capitalize"
+                    >
+                      {invitation.title}
+                    </Link>
+                  ) : (
+                    <p className="font-medium capitalize">
+                      {truncate({
+                        text: label ? invitation.sender : invitation.receiver,
+                        startChars: 4,
+                        endChars: 4,
+                        maxLength: 11,
+                      })}
+                    </p>
+                  )}
                   <p>{invitation.stake.toFixed(2)} ETH</p>
                 </div>
               </div>
@@ -81,7 +89,7 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
               </div>
             )}
 
-            {label && !invitation.responded &&(
+            {label && !invitation.responded && (
               <div className="flex space-x-2">
                 <button
                   className="bg-transparent border border-blue-700 hover:bg-blue-800

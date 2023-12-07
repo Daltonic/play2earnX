@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/daltonic/Sites/play2earnX/contracts/Play2EarnX.sol": {
-      "lastModificationDate": 1701938845175,
-      "contentHash": "40963ecebf68e03c7107e973657ecf38",
+      "lastModificationDate": 1701969549211,
+      "contentHash": "af47c211cb686773d78d82f679b0c042",
       "sourceName": "contracts/Play2EarnX.sol",
       "solcConfig": {
         "version": "0.8.17",

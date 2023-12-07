@@ -1,9 +1,9 @@
-import GameResut from '@/components/GameResut'
+import GameResult from '@/components/GameResult'
 import InviteModal from '@/components/InviteModal'
+import { getGame, getScores } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
-import { generateGameData, generateScores } from '@/utils/fakeData'
 import { GameStruct, RootState, ScoreStruct } from '@/utils/type.dt'
-import { NextPage } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -29,7 +29,7 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
         <title>Play2Earn | Game Result</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {game && <GameResut game={game} scores={scores} />}
+      {game && <GameResult game={game} scores={scores} />}
       <InviteModal />
     </div>
   )
@@ -37,9 +37,11 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
 
 export default Page
 
-export const getServerSideProps = async () => {
-  const gameData: GameStruct = generateGameData(1)[0]
-  const scoresData: ScoreStruct[] = generateScores(8)
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { id } = context.query
+  const gameData: GameStruct = await getGame(Number(id))
+  const scoresData: ScoreStruct[] = await getScores(Number(id))
+
   return {
     props: {
       gameData: JSON.parse(JSON.stringify(gameData)),

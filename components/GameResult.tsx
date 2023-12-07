@@ -8,7 +8,7 @@ interface ComponentProps {
   scores: ScoreStruct[]
 }
 
-const GameResut: React.FC<ComponentProps> = ({ scores, game }) => {
+const GameResult: React.FC<ComponentProps> = ({ scores, game }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-gray-500">
       <h1 className="text-4xl text-gray-300 capitalize font-bold mb-10">{game.title} Result</h1>
@@ -41,12 +41,12 @@ const GameResut: React.FC<ComponentProps> = ({ scores, game }) => {
             </div>
             <div
               className={`font-bold text-lg ${
-                score.played && index + 1 <= game.plays ? 'text-green-500' : 'text-red-500'
+                score.played && index + 1 <= game.acceptees ? 'text-green-500' : 'text-red-500'
               }`}
             >
-              {score.played && index + 1 <= game.plays
+              {score.played && index + 1 <= game.acceptees
                 ? 'Won'
-                : score.played && index + 1 > game.plays
+                : score.played && index + 1 > game.acceptees
                 ? 'Lossed'
                 : 'Absent'}
             </div>
@@ -57,4 +57,4 @@ const GameResut: React.FC<ComponentProps> = ({ scores, game }) => {
   )
 }
 
-export default GameResut
+export default GameResult

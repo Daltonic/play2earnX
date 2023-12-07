@@ -1,17 +1,32 @@
+import { invitePlayer } from '@/services/blockchain'
+import { globalActions } from '@/store/globalSlices'
+import { RootState } from '@/utils/type.dt'
 import React, { FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const InviteModal: React.FC = () => {
   const [player, setPlayer] = useState('')
-  const inviteModal = 'scale-0'
+
+  const { game, inviteModal } = useSelector((states: RootState) => states.globalStates)
+
+  const dispatch = useDispatch()
+  const { setInviteModal } = globalActions
 
   const sendInvitation = async (e: FormEvent) => {
     e.preventDefault()
+    if (!game) return toast.warning('Game data not found')
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        //...
+        invitePlayer(player, game?.id)
+          .then((tx) => {
+            console.log(tx)
+            closeModal()
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -22,14 +37,14 @@ const InviteModal: React.FC = () => {
   }
 
   const closeModal = () => {
-    // setGlobalState('inviteModal', 'scale-0')
+    dispatch(setInviteModal('scale-0'))
   }
   return (
     <div
       className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center
     bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${inviteModal}`}
     >
-      <div className="bg-white text-black shadow-lg shadow-blue-500 rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">
+      <div className="bg-[#010922] text-gray-300 shadow-md shadow-blue-900 rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">
         <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center">
             <p className="font-semibold">Invite Player</p>
@@ -60,8 +75,9 @@ const InviteModal: React.FC = () => {
 
             <button
               type="submit"
-              className="text-sm bg-blue-700 rounded-full w-[150px] h-[48px] text-white
-              hover:bg-blue-500 transition-colors duration-300"
+              className="bg-transparent border border-blue-700 hover:bg-blue-800
+              py-2 px-6 text-blue-700 hover:text-white rounded-full
+              transition duration-300 ease-in-out mt-5"
             >
               Send Invite
             </button>

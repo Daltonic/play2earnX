@@ -13,6 +13,7 @@ export interface GameCardStruct {
 }
 
 export interface ScoreStruct {
+  id: number
   gameId: number
   player: string
   score: number
@@ -36,12 +37,11 @@ export interface GameParams {
   id?: number
   title: string
   participants: string
-  winners: string
-  challenges: string
-  starts: string | number
-  ends: string | number
+  numberOfWinners: string
+  startDate: string | number
+  endDate: string | number
   description: string
-  stake: string
+  stake: string | number
 }
 
 export interface GameStruct {
@@ -67,6 +67,7 @@ export interface GlobalState {
   invitations: InvitationStruct[]
   createModal: string
   resultModal: string
+  inviteModal: string
 }
 
 export interface RootState {

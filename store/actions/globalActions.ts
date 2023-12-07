@@ -20,4 +20,7 @@ export const globalActions = {
   setResultModal: (state: GlobalState, action: PayloadAction<string>) => {
     state.resultModal = action.payload
   },
+  setInviteModal: (state: GlobalState, action: PayloadAction<string>) => {
+    state.inviteModal = action.payload
+  },
 }
