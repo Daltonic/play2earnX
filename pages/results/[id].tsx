@@ -23,7 +23,7 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
   useEffect(() => {
     dispatch(setGame(gameData))
     dispatch(setScores(scoresData))
-  }, [dispatch, setGame, gameData, setScores, scoresData])
+  }, [dispatch, setGame, gameData, setScores, scoresData, scores])
 
   const handlePayout = async () => {
     if (!address) return toast.warning('Connect wallet first!')

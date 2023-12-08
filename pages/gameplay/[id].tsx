@@ -68,10 +68,11 @@ interface PageComponents {
 }
 
 const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData }) => {
-  const [flipCount, setFlipCount] = useState<number>(0)
-  const [openCards, setOpenCards] = useState<GameCardStruct[]>([])
   const { address } = useAccount()
+  const [flipCount, setFlipCount] = useState<number>(0)
   const [player, setPlayer] = useState<ScoreStruct | null>(null)
+  const [openCards, setOpenCards] = useState<GameCardStruct[]>([])
+  const [allCardsFlipped, setAllCardsFlipped] = useState<boolean>(false)
 
   useEffect(() => {
     setPlayer(scoresData.filter((player) => player.player === address)[0])
@@ -89,9 +90,15 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
   )
 
   const handleCardClick = (id: number) => {
-    setCards((prevCards) =>
-      prevCards.map((card) => (card.id === id ? { ...card, isFlipped: !card.isFlipped } : card))
-    )
+    setCards((prevCards) => {
+      const updatedCards = prevCards.map((card) =>
+        card.id === id ? { ...card, isFlipped: !card.isFlipped } : card
+      )
+      const allFlipped = updatedCards.every((card) => card.isFlipped)
+      setAllCardsFlipped(allFlipped)
+      return updatedCards
+    })
+
     setFlipCount(flipCount + 1)
 
     setOpenCards((prevOpenCards) => {
@@ -158,6 +165,7 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
     )
     setOpenCards([])
     setFlipCount(0)
+    setAllCardsFlipped(false)
   }
 
   return (
@@ -168,9 +176,9 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
       </Head>
 
       <div className="min-h-screen flex flex-col justify-center items-center space-y-8">
-        {/* <h4 className="text-4xl font-semibold text-blue-700">
-          {flipCount} Flip{flipCount === 1 ? '' : 's'}
-        </h4> */}
+        <h4 className="text-2xl font-semibold text-blue-700">
+          We are keeping count of your flips, beware...
+        </h4>
 
         <div className="grid grid-cols-4 gap-4">
           {cards.map((card: GameCardStruct, i: number) => (
@@ -193,11 +201,11 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
             Reset Game
           </button>
 
-          {playerAddresses.includes(String(address)) && (
+          {playerAddresses.includes(String(address)) && allCardsFlipped && (
             <button
               onClick={handleSubmit}
-              className="bg-transparent border border-blue-700 hover:bg-blue-800
-              py-2 px-6 text-blue-700 hover:text-white rounded-full
+              className="bg-transparent border border-green-700 hover:bg-green-800
+              py-2 px-6 text-green-700 hover:text-white rounded-full
               transition duration-300 ease-in-out"
             >
               Submit Game

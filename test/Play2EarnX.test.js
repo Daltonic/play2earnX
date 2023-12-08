@@ -125,10 +125,7 @@ describe('Contracts', () => {
         })
 
       await contract.invitePlayer(player1, gameId)
-      await contract.invitePlayer(player2, gameId)
-
       await contract.connect(player1).acceptInvitation(gameId, index, { value: toWei(stake) })
-      await contract.connect(player2).acceptInvitation(gameId, index + 1, { value: toWei(stake) })
     })
 
     it('should confirm scoring and payout', async () => {
@@ -136,8 +133,8 @@ describe('Contracts', () => {
       expect(result).to.have.lengthOf(2)
       expect(result[index].played).to.be.equal(false)
 
-      await contract.connect(player1).saveScore(gameId, index, 15)
-      await contract.connect(player2).saveScore(gameId, index + 1, 11)
+      await contract.connect(owner).saveScore(gameId, index, 18)
+      await contract.connect(player1).saveScore(gameId, index + 1, 15)
 
       result = await contract.getScores(gameId)
       expect(result[index].played).to.be.equal(true)

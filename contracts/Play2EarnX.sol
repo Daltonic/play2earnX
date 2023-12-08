@@ -193,20 +193,23 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
     require(!games[gameId].paidOut, 'Game already paid out');
 
-    uint256 fee = (games[gameId].stake.mul(servicePct)).div(100);
-    uint256 profit = games[gameId].stake.sub(fee);
-    payTo(owner(), fee);
+    GameStruct memory game = games[gameId];
 
-    profit = profit.sub(fee.div(2));
-    payTo(games[gameId].owner, fee.div(2));
+    uint256 totalStakes = game.stake.mul(game.acceptees);
+    uint256 platformFee = (totalStakes.mul(servicePct)).div(100);
+    uint256 creatorFee = platformFee.sub(platformFee.div(2));
+    uint256 gameRevenue = totalStakes.sub(platformFee).sub(creatorFee);
+
+    payTo(owner(), platformFee);
+    payTo(game.owner, creatorFee);
 
     ScoreStruct[] memory Scores = new ScoreStruct[](scores[gameId].length);
     Scores = sortScores(scores[gameId]);
 
-    for (uint256 i = 0; i < games[gameId].numberOfWinners; i++) {
-      uint256 payoutAmount = profit.div(games[gameId].numberOfWinners);
+    for (uint256 i = 0; i < game.numberOfWinners; i++) {
+      uint256 payoutAmount = gameRevenue.div(game.numberOfWinners);
       payTo(Scores[i].player, payoutAmount);
-      _mint(Scores[i].player, payoutAmount); // Mint tokens to the winner
+      _mint(Scores[i].player, payoutAmount);
 
       for (uint256 j = 0; j < scores[gameId].length; j++) {
         if(Scores[i].player == scores[gameId][j].player) {

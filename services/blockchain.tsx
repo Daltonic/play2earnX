@@ -104,6 +104,27 @@ const createGame = async (game: GameParams): Promise<void> => {
   }
 }
 
+const deleteGame = async (gameId: number): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    tx = await contract.deleteGame(gameId)
+    await tx.wait()
+
+    const games: GameStruct[] = await getGames()
+    store.dispatch(setGames(games))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
 const invitePlayer = async (receiver: string, gameId: number): Promise<void> => {
   if (!ethereum) {
     reportError('Please install a browser provider')
@@ -257,4 +278,5 @@ export {
   invitePlayer,
   saveScore,
   payout,
+  deleteGame,
 }
