@@ -15,8 +15,6 @@ export const generateGameData = (count: number): GameStruct[] => {
       }),
       participants: faker.number.int({ min: 20, max: 40 }),
       numberOfWinners: faker.number.int({ min: 1, max: 10 }),
-      challenges: faker.number.int({ min: 1, max: 7 }),
-      plays: faker.number.int({ min: 1, max: 6 }),
       acceptees: faker.number.int({ min: 1, max: 10 }),
       stake: faker.number.float({ min: 0.01, max: 0.1 }),
       startDate: faker.date.future().getTime(),
@@ -35,17 +33,24 @@ export const generateInvitations = (count: number): InvitationStruct[] => {
   const invitations: InvitationStruct[] = []
 
   for (let i = 0; i < count; i++) {
-    const game: InvitationStruct = {
-      gameId: i + 1,
-      account: faker.string.hexadecimal({
+    const invitation: InvitationStruct = {
+      id: i,
+      gameId: faker.number.int({ min: 1, max: 50 }),
+      title: faker.lorem.words(5),
+      sender: faker.string.hexadecimal({
+        length: { min: 42, max: 42 },
+        prefix: '0x',
+      }),
+      receiver: faker.string.hexadecimal({
         length: { min: 42, max: 42 },
         prefix: '0x',
       }),
       stake: faker.number.float({ min: 0.01, max: 0.1 }),
       responded: faker.datatype.boolean(),
       accepted: faker.datatype.boolean(),
+      timestamp: faker.date.past().getTime(),
     }
-    invitations.push(game)
+    invitations.push(invitation)
   }
 
   return invitations

@@ -15,6 +15,9 @@ const Header: React.FC = () => {
           <Link href={'/games'} className="text-md">
             My Games
           </Link>
+          <Link href={'/invitations'} className="text-md">
+            Invitations
+          </Link>
 
           <ConnectBtn />
         </div>
