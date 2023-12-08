@@ -93,20 +93,20 @@ async function main() {
 
     playToEarnXContract = await ethers.getContractAt('PlayToEarnX', playToEarnXAddress)
 
-    generateGameData(dataCount).forEach(async (game) => {
-      await createGame(playToEarnXContract, game)
-    })
+    // generateGameData(dataCount).forEach(async (game) => {
+    //   await createGame(playToEarnXContract, game)
+    // })
 
-    Array(dataCount)
-      .fill()
-      .forEach(async (charity, i) => {
-        const randomCount = faker.number.int({ min: 1, max: 4 })
-        const invitations = await generateInvitations(randomCount)
+    // Array(dataCount)
+    //   .fill()
+    //   .forEach(async (charity, i) => {
+    //     const randomCount = faker.number.int({ min: 1, max: 4 })
+    //     const invitations = await generateInvitations(randomCount)
 
-        invitations.forEach(async (player, i) => {
-          await sendInvitation(playToEarnXContract, player)
-        })
-      })
+    //     invitations.forEach(async (player, i) => {
+    //       await sendInvitation(playToEarnXContract, player)
+    //     })
+    //   })
 
     // await getGames(playToEarnXContract)
     // await getInvitations(playToEarnXContract, 1)

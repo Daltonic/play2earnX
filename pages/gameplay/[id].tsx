@@ -4,7 +4,7 @@ import { GameCardStruct, GameStruct, ScoreStruct } from '@/utils/type.dt'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   GiAngelWings,
   GiBeech,
@@ -63,13 +63,19 @@ const shuffleCards = (array: GameCardStruct[]) => {
 
 interface PageComponents {
   gameData: GameStruct
-  qualifiedPlayers: string[]
+  playerAddresses: string[]
+  scoresData: ScoreStruct[]
 }
 
-const Page: NextPage<PageComponents> = ({ gameData, qualifiedPlayers }) => {
+const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData }) => {
   const [flipCount, setFlipCount] = useState<number>(0)
   const [openCards, setOpenCards] = useState<GameCardStruct[]>([])
   const { address } = useAccount()
+  const [player, setPlayer] = useState<ScoreStruct | null>(null)
+
+  useEffect(() => {
+    setPlayer(scoresData.filter((player) => player.player === address)[0])
+  }, [])
 
   const [cards, setCards] = useState<GameCardStruct[]>(
     shuffleCards(
@@ -119,15 +125,17 @@ const Page: NextPage<PageComponents> = ({ gameData, qualifiedPlayers }) => {
 
   const handleSubmit = async () => {
     if (!address) return toast.warning('Connect wallet first!')
+    if (!player) return toast.warning('Player data not found')
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        // saveScore(accept, invitation, index)
-        //   .then((tx) => {
-        //     console.log(tx)
-        //     resolve(tx)
-        //   })
-        //   .catch((error) => reject(error))
+        saveScore(player.gameId, player.id, flipCount)
+          .then((tx) => {
+            console.log(tx)
+            resetGame()
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -185,7 +193,7 @@ const Page: NextPage<PageComponents> = ({ gameData, qualifiedPlayers }) => {
             Reset Game
           </button>
 
-          {qualifiedPlayers.includes(String(address)) && (
+          {playerAddresses.includes(String(address)) && (
             <button
               onClick={handleSubmit}
               className="bg-transparent border border-blue-700 hover:bg-blue-800
@@ -216,13 +224,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const { id } = context.query
   const gameData: GameStruct = await getGame(Number(id))
   const scoresData: ScoreStruct[] = await getScores(Number(id))
-  const qualifiedPlayers: string[] = scoresData.map((player) => player.player)
+  const playerAddresses: string[] = scoresData.map((player) => player.player)
 
   return {
     props: {
       gameData: JSON.parse(JSON.stringify(gameData)),
       scoresData: JSON.parse(JSON.stringify(scoresData)),
-      qualifiedPlayers: JSON.parse(JSON.stringify(qualifiedPlayers)),
+      playerAddresses: JSON.parse(JSON.stringify(playerAddresses)),
     },
   }
 }

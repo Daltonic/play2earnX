@@ -190,7 +190,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function payout(uint256 gameId) public nonReentrant {
     require(gameExists[gameId], 'Game does not exist');
-    // require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
+    require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on testing
     require(!games[gameId].paidOut, 'Game already paid out');
 
     uint256 fee = (games[gameId].stake.mul(servicePct)).div(100);
@@ -203,10 +203,16 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     ScoreStruct[] memory Scores = new ScoreStruct[](scores[gameId].length);
     Scores = sortScores(scores[gameId]);
 
-    for (uint i = 0; i < games[gameId].numberOfWinners; i++) {
-      uint payoutAmount = profit.div(games[gameId].numberOfWinners);
+    for (uint256 i = 0; i < games[gameId].numberOfWinners; i++) {
+      uint256 payoutAmount = profit.div(games[gameId].numberOfWinners);
       payTo(Scores[i].player, payoutAmount);
       _mint(Scores[i].player, payoutAmount); // Mint tokens to the winner
+
+      for (uint256 j = 0; j < scores[gameId].length; j++) {
+        if(Scores[i].player == scores[gameId][j].player) {
+          scores[gameId][j].prize = payoutAmount;
+        }
+      }
     }
     games[gameId].paidOut = true;
   }

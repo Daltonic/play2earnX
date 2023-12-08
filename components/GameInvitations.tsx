@@ -65,14 +65,17 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                       {invitation.title}
                     </Link>
                   ) : (
-                    <p className="font-medium capitalize">
+                    <Link
+                      href={'/gameplay/' + invitation.gameId}
+                      className="font-medium capitalize"
+                    >
                       {truncate({
                         text: label ? invitation.sender : invitation.receiver,
                         startChars: 4,
                         endChars: 4,
                         maxLength: 11,
                       })}
-                    </p>
+                    </Link>
                   )}
                   <p>{invitation.stake.toFixed(2)} ETH</p>
                 </div>

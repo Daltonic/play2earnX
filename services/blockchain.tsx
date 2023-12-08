@@ -146,6 +146,27 @@ const saveScore = async (gameId: number, index: number, score: number): Promise<
   }
 }
 
+const payout = async (gameId: number): Promise<void> => {
+  if (!ethereum) {
+    reportError('Please install a browser provider')
+    return Promise.reject(new Error('Browser provider not installed'))
+  }
+
+  try {
+    const contract = await getEthereumContracts()
+    tx = await contract.payout(gameId)
+    await tx.wait()
+
+    const scores: ScoreStruct[] = await getScores(gameId)
+    store.dispatch(setScores(scores))
+
+    return Promise.resolve(tx)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
 const respondToInvite = async (
   accept: boolean,
   invitation: InvitationStruct,
@@ -221,7 +242,7 @@ const structuredScores = (scores: ScoreStruct[]): ScoreStruct[] =>
       score: Number(score.score),
       played: score.played,
     }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => a.score - b.score)
 
 export {
   getOwner,
@@ -234,5 +255,6 @@ export {
   respondToInvite,
   createGame,
   invitePlayer,
-  saveScore
+  saveScore,
+  payout,
 }

@@ -36,7 +36,7 @@ const GameDetails: React.FC = () => {
                 </li>
                 <li>Participants: {game.participants}</li>
                 <li>Acceptees: {game.acceptees}</li>
-                <li>Rewards: {(game.stake * game.participants).toFixed(2)} ETH</li>
+                <li>Rewards: {(game.stake * game.acceptees).toFixed(2)} ETH</li>
                 <li>Number of Winners: {game.numberOfWinners}</li>
                 <li>
                   Schedule: {timestampToDate(game.startDate)} - {timestampToDate(game.endDate)}
