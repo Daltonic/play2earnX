@@ -1,5 +1,5 @@
 import GameCard from '@/components/GameCard'
-import { getGame, getScores, saveScore } from '@/services/blockchain'
+import { generateGameData, generateScores } from '@/utils/fakeData'
 import { GameCardStruct, GameStruct, ScoreStruct } from '@/utils/type.dt'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
@@ -136,13 +136,7 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        saveScore(player.gameId, player.id, flipCount)
-          .then((tx) => {
-            console.log(tx)
-            resetGame()
-            resolve(tx)
-          })
-          .catch((error) => reject(error))
+        // ...
       }),
       {
         pending: 'Approve transaction...',
@@ -230,8 +224,8 @@ export default Page
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { id } = context.query
-  const gameData: GameStruct = await getGame(Number(id))
-  const scoresData: ScoreStruct[] = await getScores(Number(id))
+  const gameData: GameStruct = generateGameData(Number(id))[0]
+  const scoresData: ScoreStruct[] = generateScores(5)
   const playerAddresses: string[] = scoresData.map((player) => player.player)
 
   return {

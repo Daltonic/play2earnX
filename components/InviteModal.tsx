@@ -1,4 +1,3 @@
-import { invitePlayer } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { RootState } from '@/utils/type.dt'
 import React, { FormEvent, useState } from 'react'
@@ -20,13 +19,7 @@ const InviteModal: React.FC = () => {
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        invitePlayer(player, game?.id)
-          .then((tx) => {
-            console.log(tx)
-            closeModal()
-            resolve(tx)
-          })
-          .catch((error) => reject(error))
+        //...
       }),
       {
         pending: 'Approve transaction...',

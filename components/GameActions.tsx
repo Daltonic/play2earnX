@@ -8,7 +8,6 @@ import React from 'react'
 import { GameStruct } from '@/utils/type.dt'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
-import { deleteGame } from '@/services/blockchain'
 import { useAccount } from 'wagmi'
 
 const GameActions: React.FC<{ game: GameStruct }> = ({ game }) => {
@@ -16,12 +15,7 @@ const GameActions: React.FC<{ game: GameStruct }> = ({ game }) => {
   const handleDelete = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        deleteGame(game.id)
-          .then((tx) => {
-            console.log(tx)
-            resolve(tx)
-          })
-          .catch((error) => reject(error))
+        //...
       }),
       {
         pending: 'Approve transaction...',

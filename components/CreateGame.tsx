@@ -1,4 +1,3 @@
-import { createGame } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { GameParams, RootState } from '@/utils/type.dt'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
@@ -51,13 +50,7 @@ const CreateGame: React.FC = () => {
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        createGame(game)
-          .then((tx) => {
-            console.log(tx)
-            closeModal()
-            resolve(tx)
-          })
-          .catch((error) => reject(error))
+        //...
       }),
       {
         pending: 'Approve transaction...',

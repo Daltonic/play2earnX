@@ -1,6 +1,6 @@
 import GameResult from '@/components/GameResult'
-import { getGame, getScores, payout } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
+import { generateGameData, generateScores } from '@/utils/fakeData'
 import { GameStruct, RootState, ScoreStruct } from '@/utils/type.dt'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
@@ -31,12 +31,7 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        payout(game.id)
-          .then((tx) => {
-            console.log(tx)
-            resolve(tx)
-          })
-          .catch((error) => reject(error))
+        //...
       }),
       {
         pending: 'Approve transaction...',
@@ -72,8 +67,8 @@ export default Page
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { id } = context.query
-  const gameData: GameStruct = await getGame(Number(id))
-  const scoresData: ScoreStruct[] = await getScores(Number(id))
+  const gameData: GameStruct = generateGameData(Number(id))[0]
+  const scoresData: ScoreStruct[] = generateScores(5)
 
   return {
     props: {

@@ -1,7 +1,6 @@
 import React from 'react'
 import { GameStruct } from '@/utils/type.dt'
 import { formatDate, truncate } from '@/utils/helper'
-import Link from 'next/link'
 import { useDispatch } from 'react-redux'
 import { globalActions } from '@/store/globalSlices'
 import GameActions from './GameActions'
