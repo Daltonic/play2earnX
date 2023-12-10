@@ -1,18 +1,10 @@
 import React from 'react'
 import { GameStruct } from '@/utils/type.dt'
 import { formatDate, truncate } from '@/utils/helper'
-import { useDispatch } from 'react-redux'
-import { globalActions } from '@/store/globalSlices'
 import GameActions from './GameActions'
 
 const GameList: React.FC<{ games: GameStruct[] }> = ({ games }) => {
-  const dispatch = useDispatch()
-  const { setGame, setResultModal } = globalActions
-
-  const openModal = (game: GameStruct) => {
-    dispatch(setGame(game))
-    dispatch(setResultModal('scale-100'))
-  }
+  const openModal = (game: GameStruct) => {}
 
   return (
     <div className="lg:w-2/3 w-full mx-auto my-10 text-gray-300">

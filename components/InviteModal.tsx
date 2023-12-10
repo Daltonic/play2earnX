@@ -1,17 +1,12 @@
-import { globalActions } from '@/store/globalSlices'
-import { RootState } from '@/utils/type.dt'
+import { GameStruct } from '@/utils/type.dt'
 import React, { FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
-import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const InviteModal: React.FC = () => {
   const [player, setPlayer] = useState('')
-
-  const { game, inviteModal } = useSelector((states: RootState) => states.globalStates)
-
-  const dispatch = useDispatch()
-  const { setInviteModal } = globalActions
+  const [game, setGame] = useState<GameStruct | null>(null) // Change to redux
+  const inviteModal = 'scale-0'
 
   const sendInvitation = async (e: FormEvent) => {
     e.preventDefault()
@@ -29,9 +24,8 @@ const InviteModal: React.FC = () => {
     )
   }
 
-  const closeModal = () => {
-    dispatch(setInviteModal('scale-0'))
-  }
+  const closeModal = () => {}
+
   return (
     <div
       className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center

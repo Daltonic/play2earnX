@@ -1,12 +1,7 @@
-import { globalActions } from '@/store/globalSlices'
 import Link from 'next/link'
 import React from 'react'
-import { useDispatch } from 'react-redux'
 
 const Hero: React.FC = () => {
-  const dispatch = useDispatch()
-  const { setCreateModal } = globalActions
-
   return (
     <section className="py-32">
       <main
@@ -25,7 +20,6 @@ const Hero: React.FC = () => {
           <button
             className="bg-blue-700 border-[1px] py-3 px-5 duration-200
             transition-all hover:bg-blue-600"
-            onClick={() => dispatch(setCreateModal('scale-100'))}
           >
             Create Game
           </button>

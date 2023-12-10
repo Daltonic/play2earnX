@@ -1,36 +1,19 @@
 import GameDetails from '@/components/GameDetails'
 import GameList from '@/components/GameList'
 import InviteModal from '@/components/InviteModal'
-import { globalActions } from '@/store/globalSlices'
 import { generateGameData } from '@/utils/fakeData'
-import { GameStruct, RootState } from '@/utils/type.dt'
+import { GameStruct } from '@/utils/type.dt'
 import { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 
-const Page: NextPage = () => {
-  const dispatch = useDispatch()
-  const { setGames } = globalActions
-  const { games } = useSelector((states: RootState) => states.globalStates)
-
-  useEffect(() => {
-    const fetchGame = async () => {
-      const gamesData: GameStruct[] = generateGameData(3)
-
-      dispatch(setGames(gamesData))
-    }
-
-    fetchGame()
-  }, [dispatch, setGames])
-
+const Page: NextPage<{ gamesData: GameStruct[] }> = ({ gamesData }) => {
   return (
     <div>
       <Head>
         <title>Play2Earn | Game List</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <GameList games={games} />
+      <GameList games={gamesData} />
       <GameDetails />
       <InviteModal />
     </div>
@@ -38,3 +21,10 @@ const Page: NextPage = () => {
 }
 
 export default Page
+
+export const getServerSideProps = async () => {
+  const gamesData: GameStruct[] = generateGameData(5)
+  return {
+    props: { gamesData: JSON.parse(JSON.stringify(gamesData)) },
+  }
+}
