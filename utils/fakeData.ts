@@ -61,6 +61,7 @@ export const generateScores = (count: number): ScoreStruct[] => {
 
   for (let i = 0; i < count; i++) {
     const game: ScoreStruct = {
+      id: i,
       gameId: i + 1,
       player: faker.string.hexadecimal({
         length: { min: 42, max: 42 },
