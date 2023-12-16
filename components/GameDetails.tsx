@@ -50,6 +50,7 @@ const GameDetails: React.FC = () => {
                   )}
                 </li>
               </ul>
+              <p>{game.description}</p>
             </div>
           </div>
         </div>

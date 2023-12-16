@@ -3,7 +3,7 @@ const { ethers } = require('hardhat')
 const fs = require('fs')
 
 const toWei = (num) => ethers.parseEther(num.toString())
-const dataCount = 5
+const dataCount = 1
 
 const generateGameData = (count) => {
   const games = []
@@ -84,6 +84,8 @@ async function getMyInvitations(contract) {
   console.log('Invitations:', result)
 }
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 async function main() {
   let playToEarnXContract
 
@@ -93,24 +95,37 @@ async function main() {
 
     playToEarnXContract = await ethers.getContractAt('PlayToEarnX', playToEarnXAddress)
 
-    // generateGameData(dataCount).forEach(async (game) => {
-    //   await createGame(playToEarnXContract, game)
-    // })
+    // Process #1
+    await Promise.all(
+      generateGameData(dataCount).map(async (game) => {
+        await createGame(playToEarnXContract, game)
+      })
+    )
 
-    // Array(dataCount)
-    //   .fill()
-    //   .forEach(async (charity, i) => {
-    //     const randomCount = faker.number.int({ min: 1, max: 4 })
-    //     const invitations = await generateInvitations(randomCount)
+    await delay(2500) // Wait for 2.5 seconds
 
-    //     invitations.forEach(async (player, i) => {
-    //       await sendInvitation(playToEarnXContract, player)
-    //     })
-    //   })
+    // Process #2
+    await Promise.all(
+      Array(dataCount)
+        .fill()
+        .map(async (_, i) => {
+          const randomCount = faker.number.int({ min: 1, max: 2 })
+          const invitations = await generateInvitations(randomCount)
 
-    // await getGames(playToEarnXContract)
-    // await getInvitations(playToEarnXContract, 1)
-    // await getMyInvitations(playToEarnXContract)
+          await Promise.all(
+            invitations.map(async (player) => {
+              await sendInvitation(playToEarnXContract, player)
+            })
+          )
+        })
+    )
+
+    await delay(2500) // Wait for 2.5 seconds
+
+    // Process #3
+    await getGames(playToEarnXContract)
+    await getInvitations(playToEarnXContract, 1)
+    await getMyInvitations(playToEarnXContract)
   } catch (error) {
     console.error('Unhandled error:', error)
   }

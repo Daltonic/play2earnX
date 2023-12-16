@@ -1,48 +1,65 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/26466516/107675802-36216b80-6c77-11eb-8db1-4d3407dc53d9.png" alt="Next.js and TypeScript">
-</p>
+# Play2EarnX Project Documentation
 
-<p align="center">
-  <img src="https://img.shields.io/static/v1?label=PRs&message=welcome&style=for-the-badge&color=24B36B&labelColor=000000" alt="PRs welcome!" />
+<!-- Read the full tutorial here: **[>> How to build a Decentralized Game Platform with Next.js, TypeScript, Tailwind CSS, and Solidity](https://daltonic.github.io)** -->
 
-  <img alt="License" src="https://img.shields.io/github/license/chhpt/typescript-nextjs-starter?style=for-the-badge&color=24B36B&labelColor=000000">
+![Play2EarnX](./screenshots/0.png)
+The project revolves around `Play2EarnX.sol`, a Solidity-written Ethereum smart contract. It leverages the OpenZeppelin library to ensure secure and standardized development of the contract.
 
-  <a href="https://twitter.com/intent/follow?screen_name=cwuyiqing">
-    <img src="https://img.shields.io/twitter/follow/cwuyiqing?style=for-the-badge&color=24B36B&labelColor=000000" alt="Follow @chhpt" />
-  </a>
-</p>
+![Play2EarnX](./screenshots/1.png)
 
-<br>
+The core of the contract is defined by four primary structures: `GameStruct`, `PlayerStruct`, `InvitationStruct`, and `ScoreStruct`, representing a game, a player, an invitation, and a score, respectively.
 
+## Key Features
 
-# Hardhat-Tailwind-NextJs Ethers Starter Kit
-Speedily develope your decentralized application with this NextJs starter kit for free. It has Redux-Toolkit, NextJs 13, React 18, Hardhat, EthersJs, Tailwind, etc.
+- `createGame`: Allows a user to create a new game.
+- `deleteGame`: Allows the game owner to delete a game.
+- `invitePlayer`: Allows a user to invite another player to a game.
+- `acceptInvitation`: Allows a user to accept an invitation to a game.
+- `rejectInvitation`: Allows a user to reject an invitation to a game.
+- `payout`: Distributes payouts to the winners of a game.
+- `saveScore`: Records a player's score in a game.
 
-Follow the steps below to download, install, and run this project.
+## Running the Application
 
-## Dependencies
-Install these prerequisites to follow along with the tutorial. See free video tutorial or a full explanation of each prerequisite.
-- NPM: https://nodejs.org
-- Hardhat: https://hardhat.org/
-- EthersJs: https://ethers.org/
-- Tailwind CSS: https://tailwindcss.com/
+Supply the following keys in your `.env` variable:
 
-
-## Step 1. Clone the project
-`git clone https://github.com/Daltonic/hardhat_ethersjs_next_starter_app <PROJECT NAME>`
-
-## Step 2. Install dependencies
 ```sh
-$ cd <PROJECT NAME>
-$ yarn install # or npm install
-```
-## Step 3. Start Hardhat Node
-Open the terminal and run the command below.
-```sh
-$ yarn hardhat node
+NEXT_PUBLIC_RPC_URL=http://127.0.0.1:8545
+NEXT_PUBLIC_ALCHEMY_ID=<YOUR_ALCHEMY_PROJECT_ID>
+NEXT_PUBLIC_PROJECT_ID=<WALLET_CONNECT_PROJECT_ID>
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=somereallysecretsecret
 ```
 
-## Step 4. Run the Front End Application
-`$ yarn dev`
-Visit this URL in your browser: http://localhost:3000
+`YOUR_ALCHEMY_PROJECT_ID`: [Get Key Here](https://dashboard.alchemy.com/)
+`WALLET_CONNECT_PROJECT_ID`: [Get Key Here](https://cloud.walletconnect.com/sign-in)
 
+Follow these steps to run the application:
+
+1. Install the package modules by running the command: `yarn install`
+2. Start the Hardhat server: `yarn blockchain`
+3. Run the contract deployment script: `yarn deploy`
+4. Run the contract seeding script: `yarn seed`
+5. Spin up the Next.js development server: `yarn dev`
+
+Now, your application should be up and running.
+
+## 📚 Key Technologies
+
+- 🌐 Next.js: A React framework for building server-side rendered and static websites.
+- 📘 TypeScript: A statically typed superset of JavaScript.
+- 📦 Hardhat: A development environment for Ethereum smart contracts.
+- 🌐 EthersJs: A library for interacting with Ethereum and Ethereum-like blockchains.
+- 📚 Redux-Toolkit: A library for managing application state.
+- 🎨 Tailwind CSS: A utility-first CSS framework.
+
+## Useful links
+
+- 🏠 [Website](https://dappmentors.org/)
+- ⚽ [Metamask](https://metamask.io/)
+- 💡 [Hardhat](https://hardhat.org/)
+- 📈 [Alchemy](https://dashboard.alchemy.com/)
+- 🔥 [NextJs](https://nextjs.org/)
+- 🎅 [TypeScript](https://www.typescriptlang.org/)
+- 🐻 [Solidity](https://soliditylang.org/)
+- 👀 [EthersJs](https://docs.ethers.io/v5/)
