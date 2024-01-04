@@ -6,21 +6,43 @@ import {
   RainbowKitSiweNextAuthProvider,
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
-import { RainbowKitProvider, connectorsForWallets, darkTheme } from '@rainbow-me/rainbowkit'
+import { Chain, RainbowKitProvider, connectorsForWallets, darkTheme } from '@rainbow-me/rainbowkit'
 import {
   metaMaskWallet,
   trustWallet,
   coinbaseWallet,
   rainbowWallet,
 } from '@rainbow-me/rainbowkit/wallets'
-import { mainnet, polygonMumbai, sepolia, hardhat } from 'wagmi/chains'
+import { mainnet, hardhat } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 
+const bitfinity: Chain = {
+  id: 355113,
+  name: 'Bitfinity',
+  network: 'bitfinity',
+  iconUrl: 'https://bitfinity.network/logo.png',
+  iconBackground: '#000000',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Bitfinity',
+    symbol: 'BFT',
+  },
+  rpcUrls: {
+    public: { http: ['https://testnet.bitfinity.network'] },
+    default: { http: ['https://testnet.bitfinity.network'] },
+  },
+  blockExplorers: {
+    default: { name: 'Bitfinity Block Explorer', url: 'https://explorer.bitfinity.network/' },
+    etherscan: { name: 'Bitfinity Block Explorer', url: 'https://explorer.bitfinity.network/' },
+  },
+  testnet: true,
+}
+
 const { chains, publicClient } = configureChains(
-  [mainnet, polygonMumbai, sepolia, hardhat],
+  [mainnet, bitfinity, hardhat],
   [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID as string }), publicProvider()]
 )
 
