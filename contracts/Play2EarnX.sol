@@ -59,7 +59,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
   }
 
   uint256 private totalBalance;
-  uint256 private servicePct;
+  uint256 public servicePct;
 
   mapping(uint => bool) gameExists;
   mapping(uint256 => GameStruct) games;
@@ -150,7 +150,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
     games[gameId].deleted = true;
   }
 
-  function invitePlayer(address receiver, uint256 gameId) public {
+  function invitePlayer(uint256 gameId, address receiver) public {
     require(gameExists[gameId], 'Game not found');
     require(games[gameId].acceptees < games[gameId].participants, 'Out of capacity');
     require(!isListed[gameId][receiver], 'Player already accepted');
@@ -205,7 +205,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function payout(uint256 gameId) public nonReentrant {
     require(gameExists[gameId], 'Game does not exist');
-    require(currentTime() > games[gameId].endDate, 'Game still in session');
+    require(currentTime() > games[gameId].endDate, 'Game still in session'); // disable on test
     require(!games[gameId].paidOut, 'Game already paid out');
 
     GameStruct memory game = games[gameId];
@@ -350,8 +350,9 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
       if (isInvited[i][msg.sender]) {
         for (uint j = 0; j < invitationsOf[i].length; j++) {
           Invitations[index] = invitationsOf[i][j];
-          Invitations[index++].id = j;
+          Invitations[index].id = j;
         }
+        index++;
       }
     }
   }
