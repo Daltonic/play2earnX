@@ -1,5 +1,5 @@
 import GameCard from '@/components/GameCard'
-import { getGame, getScores } from '@/services/blockchain'
+import { getGame, getScores, playGame } from '@/services/blockchain'
 import { GameCardStruct, GameStruct, ScoreStruct } from '@/utils/type.dt'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
@@ -136,7 +136,13 @@ const Page: NextPage<PageComponents> = ({ gameData, playerAddresses, scoresData 
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        // ...
+        playGame(player.gameId, player.id, flipCount)
+          .then((tx) => {
+            resetGame()
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',

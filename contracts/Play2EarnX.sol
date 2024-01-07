@@ -172,6 +172,7 @@ contract PlayToEarnX is Ownable, ReentrancyGuard, ERC20 {
 
   function acceptInvitation(uint256 gameId, uint256 index) public payable {
     require(gameExists[gameId], 'Game not found');
+    require(games[gameId].acceptees < games[gameId].participants, "Out of capacity");
     require(msg.value >= games[gameId].stake, 'Insuffcient amount');
     require(invitationsOf[gameId][index].receiver == msg.sender, 'Unauthorized entity');
 

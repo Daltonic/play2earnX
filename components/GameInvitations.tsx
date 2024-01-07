@@ -64,12 +64,7 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                       href={'/gameplay/' + invitation.gameId}
                       className="font-medium capitalize"
                     >
-                      {invitation.title} {truncate({
-                        text: invitation.receiver,
-                        startChars: 4,
-                        endChars: 4,
-                        maxLength: 11,
-                      })}
+                      {invitation.title}
                     </Link>
                   ) : (
                     <Link

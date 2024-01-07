@@ -1,5 +1,5 @@
 import GameResult from '@/components/GameResult'
-import { getGame, getScores } from '@/services/blockchain'
+import { getGame, getScores, payout } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { GameStruct, RootState, ScoreStruct } from '@/utils/type.dt'
 import { GetServerSidePropsContext, NextPage } from 'next'
@@ -31,7 +31,12 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        //...
+        payout(Number(game?.id))
+          .then((tx) => {
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -49,16 +54,18 @@ const Page: NextPage<PageProps> = ({ gameData, scoresData }) => {
       </Head>
       {game && <GameResult game={game} scores={scores} />}
 
-      <div className="flex justify-center space-x-2">
-        <button
-          className="bg-transparent border border-orange-700 hover:bg-orange-800
+      {game && Date.now() > game?.endDate && !game?.paidOut && (
+        <div className="flex justify-center space-x-2">
+          <button
+            className="bg-transparent border border-orange-700 hover:bg-orange-800
           py-2 px-6 text-orange-700 hover:text-white rounded-full
           transition duration-300 ease-in-out"
-          onClick={handlePayout}
-        >
-          Payout
-        </button>
-      </div>
+            onClick={handlePayout}
+          >
+            Payout
+          </button>
+        </div>
+      )}
     </div>
   )
 }
