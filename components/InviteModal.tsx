@@ -1,12 +1,17 @@
-import { GameStruct } from '@/utils/type.dt'
+import { invitePlayer } from '@/services/blockchain'
+import { globalActions } from '@/store/globalSlices'
+import { RootState } from '@/utils/type.dt'
 import React, { FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const InviteModal: React.FC = () => {
   const [player, setPlayer] = useState('')
-  const [game, setGame] = useState<GameStruct | null>(null) // Change to redux
-  const inviteModal = 'scale-0'
+
+  const { game, inviteModal } = useSelector((states: RootState) => states.globalStates)
+  const { setInviteModal } = globalActions
+  const dispatch = useDispatch()
 
   const sendInvitation = async (e: FormEvent) => {
     e.preventDefault()
@@ -14,7 +19,13 @@ const InviteModal: React.FC = () => {
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        //...
+        invitePlayer(game.id, player)
+          .then((tx) => {
+            closeModal()
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -24,7 +35,10 @@ const InviteModal: React.FC = () => {
     )
   }
 
-  const closeModal = () => {}
+  const closeModal = () => {
+    dispatch(setInviteModal('scale-0'))
+    setPlayer('')
+  }
 
   return (
     <div

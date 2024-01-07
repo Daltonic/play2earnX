@@ -1,5 +1,6 @@
 import GameInvitations from '@/components/GameInvitations'
 import InviteModal from '@/components/InviteModal'
+import { getMyInvitations } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { generateInvitations } from '@/utils/fakeData'
 import { InvitationStruct, RootState } from '@/utils/type.dt'
@@ -15,7 +16,7 @@ const Page: NextPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const invitationsData: InvitationStruct[] = generateInvitations(5)
+      const invitationsData: InvitationStruct[] = await getMyInvitations()
       dispatch(setInvitations(invitationsData))
     }
 

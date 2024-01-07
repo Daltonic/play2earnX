@@ -1,7 +1,12 @@
+import { globalActions } from '@/store/globalSlices'
 import Link from 'next/link'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 
 const Hero: React.FC = () => {
+  const { setCreateModal } = globalActions
+  const dispatch = useDispatch()
+
   return (
     <section className="py-32">
       <main
@@ -18,6 +23,7 @@ const Hero: React.FC = () => {
 
         <div className="flex space-x-3 my-3">
           <button
+            onClick={() => dispatch(setCreateModal('scale-100'))}
             className="bg-blue-700 border-[1px] py-3 px-5 duration-200
             transition-all hover:bg-blue-600"
           >

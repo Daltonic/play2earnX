@@ -9,13 +9,20 @@ import { GameStruct } from '@/utils/type.dt'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
+import { deleteGame } from '@/services/blockchain'
 
 const GameActions: React.FC<{ game: GameStruct }> = ({ game }) => {
   const { address } = useAccount()
+
   const handleDelete = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        //...
+        deleteGame(game.id)
+          .then((tx) => {
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',

@@ -1,10 +1,15 @@
-import { GameParams } from '@/utils/type.dt'
+import { createGame } from '@/services/blockchain'
+import { globalActions } from '@/store/globalSlices'
+import { GameParams, RootState } from '@/utils/type.dt'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 const CreateGame: React.FC = () => {
-  const createModal = 'scale-0'
+  const { createModal } = useSelector((states: RootState) => states.globalStates)
+  const { setCreateModal } = globalActions
+  const dispatch = useDispatch()
 
   const [game, setGame] = useState<GameParams>({
     title: '',
@@ -25,6 +30,7 @@ const CreateGame: React.FC = () => {
   }
 
   const closeModal = () => {
+    dispatch(setCreateModal('scale-0'))
     setGame({
       title: '',
       participants: '',
@@ -43,8 +49,14 @@ const CreateGame: React.FC = () => {
     game.endDate = new Date(game.endDate).getTime()
 
     await toast.promise(
-      new Promise(async (resolve, reject) => {
-        //...
+      new Promise((resolve, reject) => {
+        createGame(game)
+          .then((tx) => {
+            closeModal()
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',

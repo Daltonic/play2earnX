@@ -1,18 +1,24 @@
+import { globalActions } from '@/store/globalSlices'
 import { timestampToDate, truncate } from '@/utils/helper'
-import { GameStruct } from '@/utils/type.dt'
-import React, { useState } from 'react'
+import { RootState } from '@/utils/type.dt'
+import React from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 
 const GameDetails: React.FC = () => {
-  const resultModal = 'scale-0'
-  const [game, setGame] = useState<GameStruct | null>(null) // Change to redux
+  const { detailsModal, game } = useSelector((states: RootState) => states.globalStates)
+  const { setGame, setDetailsModal } = globalActions
+  const dispatch = useDispatch()
 
-  const closeModal = () => {}
+  const closeModal = () => {
+    dispatch(setDetailsModal('scale-0'))
+    dispatch(setGame(null))
+  }
 
   return (
     <div
       className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center
-    bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${resultModal}`}
+    bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${detailsModal}`}
     >
       {game && (
         <div className="bg-[#010922] text-gray-500 shadow-md shadow-blue-900 rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">

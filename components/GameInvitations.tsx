@@ -5,6 +5,7 @@ import Identicon from 'react-identicons'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import Link from 'next/link'
+import { respondToInvite } from '@/services/blockchain'
 
 interface ComponentProps {
   game?: GameStruct
@@ -14,14 +15,21 @@ interface ComponentProps {
 
 const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label }) => {
   const { address } = useAccount()
+  console.log(invitations);
+  
 
-  const handleResponse = async (accept: boolean, invitation: InvitationStruct, index: number) => {
+  const handleResponse = async (accepted: boolean, invitation: InvitationStruct, index: number) => {
     if (!address) return toast.warning('Connect wallet first!')
     index = label ? invitation.id : index
 
     await toast.promise(
       new Promise<void>((resolve, reject) => {
-        //...
+        respondToInvite(accepted, invitation, index)
+          .then((tx) => {
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((error) => reject(error))
       }),
       {
         pending: 'Approve transaction...',
@@ -56,7 +64,12 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                       href={'/gameplay/' + invitation.gameId}
                       className="font-medium capitalize"
                     >
-                      {invitation.title}
+                      {invitation.title} {truncate({
+                        text: invitation.receiver,
+                        startChars: 4,
+                        endChars: 4,
+                        maxLength: 11,
+                      })}
                     </Link>
                   ) : (
                     <Link
@@ -92,7 +105,7 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                   className="bg-transparent border border-blue-700 hover:bg-blue-800
                 py-2 px-6 text-blue-700 hover:text-gray-300 rounded-full
                 transition duration-300 ease-in-out"
-                  onClick={() => handleResponse(true, invitation, index)}
+                  onClick={() => handleResponse(true, invitation, invitation.id)}
                 >
                   Accept
                 </button>
@@ -100,7 +113,7 @@ const GameInvitations: React.FC<ComponentProps> = ({ invitations, game, label })
                   className="bg-transparent border border-red-700 hover:bg-red-800
                 py-2 px-6 text-red-700 hover:text-gray-300 rounded-full
                 transition duration-300 ease-in-out"
-                  onClick={() => handleResponse(false, invitation, index)}
+                  onClick={() => handleResponse(false, invitation, invitation.id)}
                 >
                   Reject
                 </button>
