@@ -1,8 +1,8 @@
 import GameDetails from '@/components/GameDetails'
 import GameList from '@/components/GameList'
 import InviteModal from '@/components/InviteModal'
+import { getMyGames } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
-import { generateGameData } from '@/utils/fakeData'
 import { GameStruct, RootState } from '@/utils/type.dt'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -16,7 +16,7 @@ const Page: NextPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const gamesData: GameStruct[] = generateGameData(5)
+      const gamesData: GameStruct[] = await getMyGames()
       dispatch(setGames(gamesData))
     }
 

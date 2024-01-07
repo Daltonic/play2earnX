@@ -1,5 +1,6 @@
 import GameInvitations from '@/components/GameInvitations'
 import InviteModal from '@/components/InviteModal'
+import { getGame, getInvitations } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { generateGameData, generateInvitations } from '@/utils/fakeData'
 import { GameStruct, InvitationStruct, RootState } from '@/utils/type.dt'
@@ -54,8 +55,8 @@ export default Page
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { id } = context.query
-  const gameData: GameStruct = generateGameData(Number(id))[0]
-  const invitationsData: InvitationStruct[] = generateInvitations(5)
+  const gameData: GameStruct = await getGame(Number(id))
+  const invitationsData: InvitationStruct[] = await getInvitations(Number(id))
   return {
     props: {
       gameData: JSON.parse(JSON.stringify(gameData)),
