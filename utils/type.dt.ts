@@ -66,7 +66,7 @@ export interface GlobalState {
   scores: ScoreStruct[]
   invitations: InvitationStruct[]
   createModal: string
-  resultModal: string
+  detailsModal: string
   inviteModal: string
 }
 

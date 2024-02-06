@@ -22,22 +22,25 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
       <Providers pageProps={pageProps}>
         <Provider store={store}>
-          <div className="bg-[#010922] min-h-screen">
-            <Header />
-            <Component {...pageProps} />
-            <ToastContainer
-              position="bottom-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-            />
-          </div>
+          <Provider store={store}>
+            <div className="bg-[#010922] min-h-screen">
+              <Header />
+              <Component {...pageProps} />
+              <ToastContainer
+                position="bottom-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+              />
+              <div className="h-36" />
+            </div>
+          </Provider>
         </Provider>
       </Providers>
     )
